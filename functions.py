@@ -91,23 +91,29 @@ def bernoulli_test(a_dist, b_dist, p_value=0.05, additional_information = False)
 
     return ztest_pvalue
 
-def multiple_test(ndarray, p_value = 0.05, method = 'holm-bonferroni'):
+def multiple_test(ndarray, p_value=0.05, method='holm-bonferroni'):
     # calculate p_vals
     number_of_samples = len(ndarray)
     pvals = {}
-    for i in range(0, number_of_samples-1):
+
+    for i in range(0, number_of_samples - 1):
         # Test group compared to control group
-        p_val = bernoulli_test(ndarray[i], ndarray[number_of_samples-1])
+        p_val = bernoulli_test(ndarray[i], ndarray[number_of_samples - 1])
         pvals.update({i: p_val})
+
     # sort pvals
-    pvals = dict(sorted(pvals.items(), key = lambda item: item[1]))
-    # calculate p value correction
-    alpha_corrected = p_value / (number_of_samples-1)
-    # return rejected hypothesis
+    pvals = dict(sorted(pvals.items(), key=lambda item: item[1]))
+
+    # calculate Holm-Bonferroni correction
     rejected = {}
-    for key, value in pvals.items():
+    number_of_tests = len(pvals)
+
+    for i, (key, value) in enumerate(pvals.items()):
+        alpha_corrected = p_value / (number_of_tests - i)
+
         if value < alpha_corrected:
             rejected.update({key: value})
         else:
             break
+
     return rejected
