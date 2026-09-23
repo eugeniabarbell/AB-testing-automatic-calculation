@@ -117,3 +117,45 @@ def multiple_test(ndarray, p_value=0.05, method='holm-bonferroni'):
             break
 
     return rejected
+
+def bayesian_ab_test( a_dist, b_dist, prior_alpha=1, prior_beta=1, simulations=100000 ):
+    """ Bayesian A/B test for two Bernoulli samples.
+    a_dist : array-like Observations for group A (0/1).
+    b_dist : array-like Observations for group B (0/1).
+    prior_alpha : float Alpha parameter of Beta prior.
+    prior_beta : float Beta parameter of Beta prior.
+    simulations : int Number of posterior simulations.
+    Returns: dict Bayesian A/B test results. """
+
+    # Number of observations
+    n_a = len(a_dist)
+    n_b = len(b_dist)
+
+    # Number of successes
+    successes_a = sum(a_dist)
+    successes_b = sum(b_dist)
+    # Number of failures
+    failures_a = n_a - successes_a
+    failures_b = n_b - successes_b
+
+    # Observed conversion rates
+    rate_a = successes_a / n_a
+    rate_b = successes_b / n_b
+
+    # Bayesian posterior distributions
+    posterior_a = np.random.beta( prior_alpha + successes_a, prior_beta + failures_a, simulations )
+    posterior_b = np.random.beta( prior_alpha + successes_b, prior_beta + failures_b, simulations )
+
+    # Probability that B is better than A
+    probability_b_better = np.mean( posterior_b > posterior_a )
+
+    # Difference between B and A
+    difference = posterior_b - posterior_a
+    # 95% credible interval
+    difference_ci = np.percentile( difference, [2.5, 97.5] )
+
+    # Relative lift
+    relative_lift = ( (posterior_b - posterior_a) / posterior_a )
+    relative_lift_ci = np.percentile( relative_lift, [2.5, 97.5] )
+    return { "A_rate": rate_a, "B_rate": rate_b, "absolute_difference": np.mean(difference), "relative_lift": np.mean(relative_lift), "P_B_better": probability_b_better, "difference_95_CI": difference_ci, "relative_lift_95_CI": relative_lift_ci }
+
