@@ -12,7 +12,7 @@ Done: Version 1. Automated testing of statistical significance of events: Bernou
 
 Done: Version 2. Implemented multiple hypothesis testing, starting with the Holm-Bonferroni method.
 
-Version 3. Add Bayesian testing.
+In progress: Version 3. Add Bayesian testing. Needs code review.
 
 Version 4. Automated testing of statistical significance of revenue: bootstrap, chi-square distribution, Bernoulli.
 
