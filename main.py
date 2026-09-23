@@ -28,3 +28,4 @@ if __name__ == '__main__':
     print(test_bernoulli_info(p_value=0.05, additional_information=True))
     print(test_multiple_comparison_abc(p_value=0.05, method = 'holm-bonferroni'))
     print(test_multiple_comparison_aaa(p_value=0.05, method = 'holm-bonferroni'))
+    print(bayesian_ab_test(a_dist, b_dist, 1,1,20000))
